@@ -1,0 +1,110 @@
+classDiagram
+    class Word {
+        +string id
+        +string word
+        +string phonetic
+        +string partOfSpeech
+        +string meaning
+        +string example
+        +string exampleCn
+        +string grade
+        +string unit
+        +string source
+    }
+
+    class StudyProgress {
+        +string wordId
+        +string status
+        +string firstStudyAt
+        +string lastReviewAt
+        +string nextReviewAt
+        +number reviewRound
+        +number correctCount
+        +number wrongCount
+    }
+
+    class EbbinghausConfig {
+        +number[] intervals
+        +calculateNextReview(round, lastReviewDate) Date
+    }
+
+    class DBHelper {
+        +string DB_NAME
+        +number DB_VERSION
+        +string STORE_PROGRESS
+        +string STORE_CUSTOM_WORDS
+        +open() Promise~IDBDatabase~
+        +getAll(storeName) Promise~array~
+        +getByKey(storeName, key) Promise~object~
+        +put(storeName, data) Promise~
+        +delete(storeName, key) Promise~
+        +getByIndex(storeName, indexName, value) Promise~array~
+    }
+
+    class VocabService {
+        -DBHelper db
+        +loadBuiltInVocab(grade) Promise~Word[]~
+        +getWordsByGradeUnit(grade, unit) Promise~Word[]~
+        +getAllWords() Promise~Word[]~
+        +addCustomWord(word) Promise~
+        +updateCustomWord(word) Promise~
+        +deleteCustomWord(id) Promise~
+        +searchWords(query) Promise~Word[]~
+    }
+
+    class StudyService {
+        -VocabService vocabService
+        -DBHelper db
+        +startSession(wordIds, mode) StudySession
+        +getNextWord(session) Word
+        +submitCardResult(wordId, mastered) Promise~
+        +submitChoiceResult(wordId, correct) Promise~
+        +submitSpellingResult(wordId, correct) Promise~
+        +getSessionStats(session) object
+    }
+
+    class ReviewService {
+        -DBHelper db
+        -EbbinghausConfig config
+        +getTodayReviewWords() Promise~Word[]~
+        +getReviewCount() Promise~number~
+        +markReviewed(wordId, correct) Promise~
+        +calculateNextReview(currentRound, lastReviewDate) Date
+        +isReviewDue(wordId) Promise~boolean~
+    }
+
+    class TtsService {
+        -SpeechSynthesis synth
+        +speak(text, lang) void
+        +stop() void
+        +isAvailable() boolean
+    }
+
+    class Router {
+        -Map routes
+        -string currentRoute
+        +register(path, pageRenderer) void
+        +navigate(path) void
+        +init() void
+        +getCurrentRoute() string
+    }
+
+    class StudySession {
+        +string id
+        +string mode
+        +string[] wordIds
+        +number currentIndex
+        +number correctCount
+        +number wrongCount
+        +string startedAt
+    }
+
+    Word --> StudyProgress : tracked by
+    VocabService --> DBHelper : uses
+    VocabService --> Word : manages
+    StudyService --> VocabService : uses
+    StudyService --> DBHelper : uses
+    StudyService --> StudySession : creates
+    ReviewService --> DBHelper : uses
+    ReviewService --> EbbinghausConfig : uses
+    ReviewService --> StudyProgress : manages

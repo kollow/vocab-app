@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant User as 用户
+    participant App as app.js
+    participant SW as Service Worker
+    participant DB as DBHelper
+    participant Router as Router
+    participant ReviewSvc as ReviewService
+    participant HomePage as home-page.js
+
+    User->>App: 打开应用
+    App->>SW: navigator.serviceWorker.register('sw.js')
+    SW-->>App: 注册成功
+    App->>DB: DBHelper.open()
+    DB-->>App: IDBDatabase实例
+    App->>Router: Router.init()
+    Router->>Router: 解析当前hash
+    Router->>HomePage: render()
+    HomePage->>ReviewSvc: getReviewCount()
+    ReviewSvc->>DB: getAll('progress')
+    DB-->>ReviewSvc: StudyProgress[]
+    ReviewSvc-->>HomePage: 今日待复习数量
+    HomePage-->>User: 渲染首页

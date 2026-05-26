@@ -1,0 +1,54 @@
+# Android 构建产物
+android/app/build/
+android/app/.cxx/
+android/build/
+android/.gradle/
+android/local.properties
+
+# 签名密钥（绝对不能提交！）
+*.jks
+*.keystore
+android/app/*.jks
+android/app/*.keystore
+
+# Node.js (如果有)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE 配置
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# 压缩包
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# 密钥和敏感配置
+gradle.properties.local
+secrets.properties
